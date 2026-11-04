@@ -6,6 +6,7 @@ import com.trujillo.franchise_api.domain.model.Product;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+// Contrato: los métodos find devuelven Mono vacío cuando no encuentran el recurso.
 public interface FranchiseRepository {
 
     Mono<Franchise> saveFranchise(Franchise franchise);
