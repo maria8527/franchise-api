@@ -7,6 +7,7 @@ import com.trujillo.franchise_api.domain.model.BranchTopProduct;
 import com.trujillo.franchise_api.domain.model.Franchise;
 import com.trujillo.franchise_api.domain.model.Product;
 import com.trujillo.franchise_api.domain.repository.FranchiseRepository;
+import com.trujillo.franchise_api.infrastructure.persistence.FranchiseItemMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -16,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -325,5 +329,29 @@ class CreateFranchiseUseCaseTest {
                 .verify();
 
         verify(repository, never()).saveProduct(any(Product.class));
+    }
+
+    // ---------- FranchiseItemMapper ----------
+
+    @Test
+    void mapper_shouldConvertProductToItemAndBack() {
+        Product product = new Product("p1", "f1", "b1", "Hamburguesa", 10);
+
+        Map<String, AttributeValue> item = FranchiseItemMapper.toItem(product);
+
+        assertEquals("FRANCHISE#f1", item.get("pk").s());
+        assertEquals("PRODUCT#b1#p1", item.get("sk").s());
+        assertEquals(product, FranchiseItemMapper.toProduct(item));
+    }
+
+    @Test
+    void mapper_shouldConvertBranchToItemAndBack() {
+        Branch branch = new Branch("b1", "f1", "Centro");
+
+        Map<String, AttributeValue> item = FranchiseItemMapper.toItem(branch);
+
+        assertEquals("FRANCHISE#f1", item.get("pk").s());
+        assertEquals("BRANCH#b1", item.get("sk").s());
+        assertEquals(branch, FranchiseItemMapper.toBranch(item));
     }
 }
