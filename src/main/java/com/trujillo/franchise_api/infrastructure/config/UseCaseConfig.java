@@ -52,4 +52,14 @@ public class UseCaseConfig {
     public UpdateProductNameUseCase updateProductNameUseCase(FranchiseRepository repository) {
         return new UpdateProductNameUseCase(repository);
     }
+
+    @Bean
+    public ListFranchisesUseCase listFranchisesUseCase(FranchiseRepository repository) {
+        return new ListFranchisesUseCase(repository);
+    }
+
+    @Bean
+    public GetFranchiseDetailUseCase getFranchiseDetailUseCase(FranchiseRepository repository) {
+        return new GetFranchiseDetailUseCase(repository);
+    }
 }

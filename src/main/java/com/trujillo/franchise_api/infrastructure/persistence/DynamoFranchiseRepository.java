@@ -37,6 +37,14 @@ public class DynamoFranchiseRepository implements FranchiseRepository {
         return getItem(pk, FranchiseItemMapper.FRANCHISE_SK).map(FranchiseItemMapper::toFranchise);
     }
 
+    @Override
+    public Flux<Franchise> findAllFranchises() {
+        // Scan: recorre toda la tabla y se queda solo con los ítems de tipo franquicia
+        ScanRequest request = ScanRequest.builder().tableName(tableName).filterExpression("sk = :sk").expressionAttributeValues(Map.of(":sk", FranchiseItemMapper.str(FranchiseItemMapper.FRANCHISE_SK))).build();
+
+        return Flux.from(dynamoDb.scanPaginator(request)).flatMapIterable(ScanResponse::items).map(FranchiseItemMapper::toFranchise);
+    }
+
     // ---------- Sucursales ----------
 
     @Override

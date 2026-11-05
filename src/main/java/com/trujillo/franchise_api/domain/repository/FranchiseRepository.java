@@ -26,4 +26,6 @@ public interface FranchiseRepository {
     Mono<Void> deleteProduct(String franchiseId, String branchId, String productId);
 
     Flux<Product> findProductsByFranchise(String franchiseId);
+
+    Flux<Franchise> findAllFranchises();
 }
