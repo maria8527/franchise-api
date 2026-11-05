@@ -46,6 +46,15 @@ class CreateFranchiseUseCaseTest {
     @InjectMocks
     private GetTopStockProductsUseCase getTopStockProductsUseCase;
 
+    @InjectMocks
+    private UpdateFranchiseNameUseCase updateFranchiseNameUseCase;
+
+    @InjectMocks
+    private UpdateBranchNameUseCase updateBranchNameUseCase;
+
+    @InjectMocks
+    private UpdateProductNameUseCase updateProductNameUseCase;
+
     @Test
     void execute_shouldSaveFranchiseAndReturnIt() {
         // Arrange: el repositorio falso devuelve esta franquicia al guardar
@@ -226,5 +235,95 @@ class CreateFranchiseUseCaseTest {
         when(repository.findFranchiseById("f1")).thenReturn(Mono.empty());
 
         StepVerifier.create(getTopStockProductsUseCase.execute("f1")).expectError(ResourceNotFoundException.class).verify();
+    }
+
+    // ---------- UpdateFranchiseNameUseCase ----------
+
+    @Test
+    void updateFranchiseName_shouldSaveFranchiseWithNewName() {
+        Franchise franchise = new Franchise("f1", "Burger Corp");
+        Franchise updated = new Franchise("f1", "Burger Master");
+        when(repository.findFranchiseById("f1")).thenReturn(Mono.just(franchise));
+        when(repository.saveFranchise(any(Franchise.class))).thenReturn(Mono.just(updated));
+
+        StepVerifier.create(updateFranchiseNameUseCase.execute("f1", "Burger Master"))
+                .expectNext(updated)
+                .verifyComplete();
+
+        ArgumentCaptor<Franchise> captor = ArgumentCaptor.forClass(Franchise.class);
+        verify(repository).saveFranchise(captor.capture());
+        assertEquals("f1", captor.getValue().id());
+        assertEquals("Burger Master", captor.getValue().name());
+    }
+
+    @Test
+    void updateFranchiseName_shouldFailWhenFranchiseNotFound() {
+        when(repository.findFranchiseById("f1")).thenReturn(Mono.empty());
+
+        StepVerifier.create(updateFranchiseNameUseCase.execute("f1", "Burger Master"))
+                .expectError(ResourceNotFoundException.class)
+                .verify();
+
+        verify(repository, never()).saveFranchise(any(Franchise.class));
+    }
+
+    // ---------- UpdateBranchNameUseCase ----------
+
+    @Test
+    void updateBranchName_shouldSaveBranchWithNewName() {
+        Branch branch = new Branch("b1", "f1", "Centro");
+        Branch updated = new Branch("b1", "f1", "Centro Histórico");
+        when(repository.findBranch("f1", "b1")).thenReturn(Mono.just(branch));
+        when(repository.saveBranch(any(Branch.class))).thenReturn(Mono.just(updated));
+
+        StepVerifier.create(updateBranchNameUseCase.execute("f1", "b1", "Centro Histórico"))
+                .expectNext(updated)
+                .verifyComplete();
+
+        ArgumentCaptor<Branch> captor = ArgumentCaptor.forClass(Branch.class);
+        verify(repository).saveBranch(captor.capture());
+        assertEquals("b1", captor.getValue().id());
+        assertEquals("Centro Histórico", captor.getValue().name());
+    }
+
+    @Test
+    void updateBranchName_shouldFailWhenBranchNotFound() {
+        when(repository.findBranch("f1", "b1")).thenReturn(Mono.empty());
+
+        StepVerifier.create(updateBranchNameUseCase.execute("f1", "b1", "Centro Histórico"))
+                .expectError(ResourceNotFoundException.class)
+                .verify();
+
+        verify(repository, never()).saveBranch(any(Branch.class));
+    }
+
+    // ---------- UpdateProductNameUseCase ----------
+
+    @Test
+    void updateProductName_shouldSaveProductWithNewNameAndSameStock() {
+        Product product = new Product("p1", "f1", "b1", "Hamburguesa", 10);
+        Product updated = new Product("p1", "f1", "b1", "Hamburguesa Doble", 10);
+        when(repository.findProduct("f1", "b1", "p1")).thenReturn(Mono.just(product));
+        when(repository.saveProduct(any(Product.class))).thenReturn(Mono.just(updated));
+
+        StepVerifier.create(updateProductNameUseCase.execute("f1", "b1", "p1", "Hamburguesa Doble"))
+                .expectNext(updated)
+                .verifyComplete();
+
+        ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
+        verify(repository).saveProduct(captor.capture());
+        assertEquals("Hamburguesa Doble", captor.getValue().name());
+        assertEquals(10, captor.getValue().stock());
+    }
+
+    @Test
+    void updateProductName_shouldFailWhenProductNotFound() {
+        when(repository.findProduct("f1", "b1", "p1")).thenReturn(Mono.empty());
+
+        StepVerifier.create(updateProductNameUseCase.execute("f1", "b1", "p1", "Hamburguesa Doble"))
+                .expectError(ResourceNotFoundException.class)
+                .verify();
+
+        verify(repository, never()).saveProduct(any(Product.class));
     }
 }
