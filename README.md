@@ -55,9 +55,8 @@ Cuando veas `Started FranchiseApiApplication` en la consola, ya está lista.
 Abre en el navegador `http://localhost:8080/franchises`. Debe mostrar `[]` (todavía no hay franquicias).
 
 Para probar todo de una vez, importa en Postman la colección `docs/franchise-api.postman_collection.json` y ejecútala con **Run collection**. Hace el flujo completo (crear, consultar, actualizar, eliminar y casos de error) y marca en verde lo que pasa.
-
 ```
-
+```
 **4. Apágala**
 
 ```bash
