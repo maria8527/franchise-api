@@ -55,8 +55,7 @@ Cuando veas `Started FranchiseApiApplication` en la consola, ya está lista.
 Abre en el navegador `http://localhost:8080/franchises`. Debe mostrar `[]` (todavía no hay franquicias).
 
 Para probar todo de una vez, importa en Postman la colección `docs/franchise-api.postman_collection.json` y ejecútala con **Run collection**. Hace el flujo completo (crear, consultar, actualizar, eliminar y casos de error) y marca en verde lo que pasa.
-```
-```
+
 **4. Apágala**
 
 ```bash
@@ -136,17 +135,6 @@ Las credenciales las toma de tu configuración de AWS CLI. No hay ninguna clave 
 ```bash
 aws cloudformation delete-stack --stack-name franchise-api-dynamodb --region us-east-1
 ```
-
-### Qué se puede configurar (opcional)
-
-Normalmente no tienes que cambiar nada. Esta tabla es solo para saber qué existe. Cada valor se puede dar como propiedad o como variable de entorno:
-
-| Qué es | Propiedad | Variable de entorno | Valor por defecto |
-|---|---|---|---|
-| Región de AWS | `aws.region` | `AWS_REGION` | `us-east-1` |
-| Nombre de la tabla | `aws.dynamodb.table-name` | `AWS_DYNAMODB_TABLE_NAME` | `franchises` |
-| Dirección de la base | `aws.dynamodb.endpoint` | `AWS_DYNAMODB_ENDPOINT` | Vacío (= AWS real). En Docker, el `docker-compose.yml` la llena con la base local |
-
 ## Endpoints
 
 Las rutas siguen la jerarquía: franquicia → sucursal → producto. Los `{id}` los devuelven las peticiones de creación y de consulta.
